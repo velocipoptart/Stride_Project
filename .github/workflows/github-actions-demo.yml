@@ -1,0 +1,30 @@
+name: Stride CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Install Stride
+        run: |
+          curl -L https://github.com/stride3d/stride/releases/download/v4.1.0.0/StrideSetup.exe -o StrideSetup.exe
+          chmod +x StrideSetup.exe
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build the project
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal --configuration Release
